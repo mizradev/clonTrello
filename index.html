@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>ClonTrello</title>
+    <link rel="stylesheet" href="./bootstrap.min.css"/>
+    <style>body{ background-color: #1175c0; } h1{color: #f2f2f2}</style>
+  </head>
+  <body>
+    <div id="app" class="container mt-5">
+      <h1 >ClonTrello</h1>
+      <div class="row">
+        <div class="col-md-4 mt-2" v-for="(list, index) in lists">
+          <div class="card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between">
+                <h4>{{ list.name }}</h4>
+                <button
+                  :class="list.status == 'creating' ? 'btn-warning' : 'btn-danger' "
+                  class="btn btn-sm"
+                  @click="removeList(index)"
+                >
+                  {{ list.status == "creating" ? "Cancel" : "Delete" }}
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <form @submit.prevent="saveList(list)" action="/">
+                <div class="form-group" v-if="list.status != 'saved'">
+                  <input placeholder="List name" v-model="list.name" class="form-control" />
+                </div>
+                <button
+                  v-if="list.status != 'saved'"
+                  class="btn btn-primary btn-block"
+                >
+                  Save
+                </button>
+              </form>
+
+              <!-- C A R D   C O M P O N E N T -->
+              <div v-if="list.status == 'saved'" class="card-task">
+                <div v-for="(task, index) in list.tasks">
+                  <div class="d-flex justify-content-between form-group">
+                    <input
+                      v-model="task.info"
+                      :id="'taskSaved'+index"
+                      readonly
+                      @click="editTaskInput('taskSaved'+index, task)"
+                      class="form-control m-1"
+                      placeholder="add task"
+                    />
+                    <div class="d-flex justify-content-between m-1" v-if="task.saved == false">
+                      <button class="btn btn-danger m-1" @click="deleteTask(list.tasks, index)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                      <button class="btn btn-primary m-1" @click="updateTask('taskSaved'+index, task)"
+                          style="box-shadow: 0 0 10px #f2f2f2"
+                        >
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <input
+                    class="form-control"
+                    placeholder="Add task"
+                    :id="'task'+index"
+                    @keyup.enter="addTask(index)"
+                  />
+                </div>
+                <button
+                  v-if="list.status == 'saved'"
+                  class="btn btn-success"
+                  @click="addTask(index)"
+                >
+                  Add task
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mt-3">
+          <button class="btn rounded-0 btn-success btn-block" @click="addList">
+            <span class="text-white">Add list</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- libs -->
+    <script src="https://kit.fontawesome.com/675105a60e.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+  ​
+</html>
